@@ -1,5 +1,4 @@
 <?php
-
 /*
 Plugin Name: EPFL Memento shortcodes and function
 Plugin URI: https://github.com/epfl-sti/wordpress.plugin.memento
