@@ -28,6 +28,30 @@ function epfl_memento_get_rss_content($rss_url)
   return simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA);
 }
 
+function epfl_memento_event_date($event_url)
+{
+  $curl = curl_init();
+  curl_setopt_array($curl, Array(
+    CURLOPT_URL            => $event_url, // 'https://memento.epfl.ch/feeds/rss/?lang=en&period=upcoming7days&memento=sti',
+    CURLOPT_HEADER         => 0,
+    CURLOPT_RETURNTRANSFER => TRUE,
+    CURLOPT_BINARYTRANSFER => TRUE,
+    CURLOPT_ENCODING       => 'UTF-8'
+  ));
+
+  $response = curl_exec($curl);
+  curl_close($curl);
+
+  $dom = new DOMDocument();
+  $dom->loadHTML($response);
+  $text_event = $dom->getElementById('text-event');
+
+  echo '<pre>';
+  var_dump($text_event->nodeValue);
+  var_dump($text_event->textContent);
+  echo '</pre>';
+}
+
 function epfl_memento_get_event($rss_xml, $link)
 {
   $ns = $rss_xml->channel->getNamespaces(true);
@@ -84,16 +108,16 @@ function epfl_memento_multi_wp_shortcode($atts) {
   $atts = array_change_key_case((array)$atts, CASE_LOWER);
 
   // override default attributes with user attributes
-  $memento_multi_atts = shortcode_atts(['number'   => 10,
+  $memento_multi_atts = shortcode_atts(['count'   => 10,
                                   'scope'    => 'epfl', // sti, sv, epfl etc...
                                   'lang'     => 'en',
-                                  'period'   => 'upcoming',
+                                  'period'   => '',
                                   'category' => '',     // CONF, COURS, EXPO etc...
                                   'tmpl'     => 'full', // full, short, widget
                                   'url'      => 'https://memento.epfl.ch/feeds/rss/', // https://help-memento.epfl.ch/page-76077-en.html
                                ], $atts);
 
-  $max = esc_attr($memento_multi_atts['number']);
+  $max = esc_attr($memento_multi_atts['count']);
   $tmpl = esc_attr($memento_multi_atts['tmpl']);
   $rss_xml = epfl_memento_get_rss_content(epfl_memento_gen_url($memento_multi_atts));
 

@@ -2,7 +2,7 @@
 function epfl_memento_display_example($rss_xml, $max_number)
 {
   $ns = $rss_xml->channel->getNamespaces(true);
-  $count = 0;
+  $count = 1;
   echo "<table>";
   foreach ($rss_xml->channel->item as $item) {
     $epfl = $item->children($ns['epfl']);
